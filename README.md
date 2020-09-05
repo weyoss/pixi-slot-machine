@@ -14,8 +14,13 @@ $ yarn install
 
 ## Configuration
 
+The configuration file `index.ts` is located under the [config folder](./src/config) and allows you to change for 
+example the game dimensions (width, height), the number of reels, visible reels' cells or enable/disable the easy mode.
+
+Supported configuration parameters are described by the `ConfigInterface` interface.
+
 ```typescript
-export interface ConfigInterface {
+interface ConfigInterface {
   gameWidth: number;
   gameHeight: number;
   reelsPosition: { x: number; y: number };
@@ -56,7 +61,9 @@ Position of the FPS display.
 
 ### totalReels
 
-Total number of reels.
+Total number of reels. 
+
+If you change this parameter you need also to update [reelRatationSpeedFactor](#reelrotationspeedfactor) parameter.
 
 ### reelRotationCycles
 
