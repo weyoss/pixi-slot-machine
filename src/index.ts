@@ -39,8 +39,8 @@ export default function main() {
     const button = Button((cb: Function) => reels.rotate(cb));
     stage.addChild(button);
 
-    const counter = FPSCounter();
-    stage.addChild(counter);
+    const container = FPSCounter(app.ticker);
+    stage.addChild(container);
   }
 
   function createRenderer(): void {

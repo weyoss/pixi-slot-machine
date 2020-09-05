@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js';
 
-export default function FPSCounter() {
+export default function FPSCounter(ticker: PIXI.Ticker) {
   const container = new PIXI.Container();
   container.position.set(220, 560);
 
@@ -8,14 +8,12 @@ export default function FPSCounter() {
     fontSize: 20,
     fill: 0xff0000
   });
-  container.addChild(fpsPanel);
 
-  const ticker = new PIXI.Ticker();
-  ticker.add(() => {
+  setInterval(() => {
     const fps = ticker.FPS.toFixed(2);
     fpsPanel.text = `Timestamp: ${Date.now()}, FPS: ${fps}`;
-  });
-  ticker.start();
+  }, 1000);
 
+  container.addChild(fpsPanel);
   return container;
 }
