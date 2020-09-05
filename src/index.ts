@@ -12,35 +12,42 @@ import FPSCounter from './FPSCounter';
 import './style.css';
 import btnPlayAsset from './assets/playbtn.png';
 import btnPlayInactiveAsset from './assets/playbtn_inactive.png';
-import reelCeelsAsset from './assets/reel_cells.png';
+import reelCellsAsset from './assets/reel_cells.png';
+
+const gameWidth = 800;
+const gameHeight = 600;
+const reelsPosition = { x: 120, y: 60 };
+const buttonPosition = { x: 300, y: 440 };
+const fpsPanelPosition = { x: 220, y: 560 };
 
 export default function main() {
-  const gameWidth = 800;
-  const gameHeight = 600;
   let app: PIXI.Application;
 
   function loadAssets(): void {
     const loader = PIXI.Loader.shared;
     loader.add('playbtn', btnPlayAsset);
     loader.add('playbtn_inactive', btnPlayInactiveAsset);
-    loader.add('reel_cells', reelCeelsAsset);
+    loader.add('reel_cells', reelCellsAsset);
     loader.onComplete.once(setup);
     loader.load();
   }
 
   function setup(): void {
     createRenderer();
-
     const stage = app.stage;
 
-    const reels = Reels();
-    stage.addChild(reels.getContainer());
+    const { rotate, getContainer } = Reels();
+    const reelsContainer = getContainer();
+    reelsContainer.position.set(reelsPosition.x, reelsPosition.y);
+    stage.addChild(reelsContainer);
 
-    const button = Button((cb: Function) => reels.rotate(cb));
-    stage.addChild(button);
+    const btnContainer = Button((cb: Function) => rotate(cb));
+    btnContainer.position.set(buttonPosition.x, buttonPosition.y);
+    stage.addChild(btnContainer);
 
-    const container = FPSCounter(app.ticker);
-    stage.addChild(container);
+    const fpsContainer = FPSCounter(app.ticker);
+    fpsContainer.position.set(fpsPanelPosition.x, fpsPanelPosition.y);
+    stage.addChild(fpsContainer);
   }
 
   function createRenderer(): void {

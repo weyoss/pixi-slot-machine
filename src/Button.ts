@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js';
 
-export default function Button(onClickActive: Function) {
+export default function Button(onClickActive: Function): PIXI.Container {
   const activeBTN = PIXI.Texture.from('playbtn');
   const inactiveBTN = PIXI.Texture.from('playbtn_inactive');
   let isActive = true;
@@ -21,7 +21,6 @@ export default function Button(onClickActive: Function) {
   });
 
   const container = new PIXI.Container();
-  container.position.set(300, 440);
   container.addChild(button);
 
   return container;
