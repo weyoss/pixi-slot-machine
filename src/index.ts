@@ -4,18 +4,14 @@
  */
 
 import * as PIXI from 'pixi.js';
-
+import { config } from './config';
 import Button from './components/Button';
 import Reels from './components/Reels';
 import FPSDisplay from './components/FPSDisplay';
 
 import './style.css';
 
-const gameWidth = 800;
-const gameHeight = 600;
-const reelsPosition = { x: 120, y: 60 };
-const buttonPosition = { x: 300, y: 440 };
-const FPSDisplayPosition = { x: 220, y: 560 };
+const { gameWidth, gameHeight, reelsPosition, buttonPosition, FPSDisplayPosition } = config;
 
 export default function main() {
   let app: PIXI.Application;

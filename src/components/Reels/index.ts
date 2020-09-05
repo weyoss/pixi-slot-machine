@@ -1,16 +1,23 @@
 import * as PIXI from 'pixi.js';
+import { config } from '../../config';
 import { ReelsFactoryInterface } from './contract';
 
 import reelCellsImg from './assets/reel_cells.png';
 
-const reelsNumber = 5;
-const reelCellWidth = 102;
-const reelCellHeight = 100;
+const {
+  totalReels,
+  reelRotationCycles,
+  reelRotationSpeedFactor,
+  reelTotalCells,
+  reelCellHeight,
+  reelCellWidth,
+  reelVisibleCells,
+  reelVerticalPadding,
+  reelHorizontalMargin,
+  useEasyMode
+} = config;
 const reelWidth = reelCellWidth;
-const reelHeight = reelCellHeight * 3 + 20;
-const reelCellNumber = 7;
-const reelSpeedFactor = [5, 10, 15, 20, 30];
-const reelRotationCycles = 2;
+const reelHeight = reelCellHeight * reelVisibleCells + reelVerticalPadding;
 
 const Reel = (width: number, height: number): PIXI.TilingSprite => {
   const reelCellsTexture = PIXI.Texture.from('reelCellsImg');
@@ -19,17 +26,17 @@ const Reel = (width: number, height: number): PIXI.TilingSprite => {
 
 const getNumberBetween = (min: number, max: number): number => Math.floor(Math.random() * (max - min + 1)) + min;
 
-const getNewReelPositions = (easyLevel = true): number[] => {
+const getNewReelPositions = (easyMode = true): number[] => {
   const positions = [];
   let preDefinedPosition = null;
-  if (easyLevel) {
+  if (easyMode) {
     const chance = getNumberBetween(0, 10);
     if (chance < 5) {
-      preDefinedPosition = getNumberBetween(0, reelCellNumber - 1);
+      preDefinedPosition = getNumberBetween(0, reelTotalCells - 1);
     }
   }
-  for (let i = 0; i < reelsNumber; i += 1) {
-    const position = preDefinedPosition || getNumberBetween(0, reelCellNumber - 1);
+  for (let i = 0; i < totalReels; i += 1) {
+    const position = preDefinedPosition || getNumberBetween(0, reelTotalCells - 1);
     positions.push(position);
   }
   return positions;
@@ -44,23 +51,23 @@ const Reels: ReelsFactoryInterface = () => {
   const container: PIXI.Container = new PIXI.Container();
   const reels: PIXI.TilingSprite[] = [];
   const reelsCyclesLength: number[] = [];
-  let reelPositions: number[] = Array.from({ length: reelsNumber }, (_, index) => index);
+  let reelPositions: number[] = Array.from({ length: totalReels }, (_, index) => index);
 
-  for (let i = 0; i < reelsNumber; i = i + 1) {
+  for (let i = 0; i < totalReels; i = i + 1) {
     const reel = Reel(reelWidth, reelHeight);
     reel.tilePosition.x = 0;
-    reel.tilePosition.y = -reelPositions[i] * reelCellHeight + 10;
-    reel.x = i * (reelWidth + 10);
+    reel.tilePosition.y = -reelPositions[i] * reelCellHeight + Math.floor(reelVerticalPadding / 2);
+    reel.x = i * (reelWidth + reelHorizontalMargin);
     reel.y = 0;
     reels.push(reel);
     container.addChild(reel);
   }
 
   function rotateReels(cb: Function): void {
-    for (let i = 0; i < reelsNumber; i++) {
+    for (let i = 0; i < totalReels; i++) {
       if (reelsCyclesLength[i] > 0) {
-        reels[i].tilePosition.y += reelSpeedFactor[i];
-        reelsCyclesLength[i] -= reelSpeedFactor[i];
+        reels[i].tilePosition.y += reelRotationSpeedFactor[i];
+        reelsCyclesLength[i] -= reelRotationSpeedFactor[i];
       } else if (reelsCyclesLength[i] < 0) {
         reels[i].tilePosition.y += reelsCyclesLength[i];
         reelsCyclesLength[i] = 0;
@@ -80,10 +87,10 @@ const Reels: ReelsFactoryInterface = () => {
     },
 
     rotate(cb) {
-      reelPositions = getNewReelPositions();
-      for (let i = 0; i < reelsNumber; i += 1) {
-        reels[i].tilePosition.y = -reelPositions[i] * reelCellHeight + 10;
-        reelsCyclesLength[i] = reelRotationCycles * reelCellHeight * reelCellNumber;
+      reelPositions = getNewReelPositions(useEasyMode);
+      for (let i = 0; i < totalReels; i += 1) {
+        reels[i].tilePosition.y = -reelPositions[i] * reelCellHeight + Math.ceil(reelVerticalPadding / 2);
+        reelsCyclesLength[i] = reelRotationCycles * reelCellHeight * reelTotalCells;
       }
       rotateReels(cb);
     }
