@@ -1,4 +1,7 @@
 import * as PIXI from 'pixi.js';
+import { ReelsFactoryInterface } from './contract';
+
+import reelCellsImg from './assets/reel_cells.png';
 
 const reelsNumber = 5;
 const reelCellWidth = 102;
@@ -9,16 +12,14 @@ const reelCellNumber = 7;
 const reelSpeedFactor = [5, 10, 15, 20, 30];
 const reelRotationCycles = 2;
 
-function Reel(width: number, height: number): PIXI.TilingSprite {
-  const texture = PIXI.Texture.from('reel_cells');
-  return new PIXI.TilingSprite(texture, width, height);
-}
+const Reel = (width: number, height: number): PIXI.TilingSprite => {
+  const reelCellsTexture = PIXI.Texture.from('reelCellsImg');
+  return new PIXI.TilingSprite(reelCellsTexture, width, height);
+};
 
-function getNumberBetween(min: number, max: number): number {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
+const getNumberBetween = (min: number, max: number): number => Math.floor(Math.random() * (max - min + 1)) + min;
 
-function getNewReelPositions(easyLevel = true): number[] {
+const getNewReelPositions = (easyLevel = true): number[] => {
   const positions = [];
   let preDefinedPosition = null;
   if (easyLevel) {
@@ -32,14 +33,14 @@ function getNewReelPositions(easyLevel = true): number[] {
     positions.push(position);
   }
   return positions;
-}
+};
 
-function checkResults(positions: number[]): void {
+const checkResults = (positions: number[]): void => {
   const win = positions.find((i) => i !== positions[0]) === undefined;
   if (win) alert('You won!');
-}
+};
 
-export default function Reels(): { getContainer(): PIXI.Container; rotate(cb: Function): void } {
+const Reels: ReelsFactoryInterface = () => {
   const container: PIXI.Container = new PIXI.Container();
   const reels: PIXI.TilingSprite[] = [];
   const reelsCyclesLength: number[] = [];
@@ -78,7 +79,7 @@ export default function Reels(): { getContainer(): PIXI.Container; rotate(cb: Fu
       return container;
     },
 
-    rotate(cb: Function) {
+    rotate(cb) {
       reelPositions = getNewReelPositions();
       for (let i = 0; i < reelsNumber; i += 1) {
         reels[i].tilePosition.y = -reelPositions[i] * reelCellHeight + 10;
@@ -87,4 +88,10 @@ export default function Reels(): { getContainer(): PIXI.Container; rotate(cb: Fu
       rotateReels(cb);
     }
   };
-}
+};
+
+Reels.load = (loader) => {
+  loader.add('reelCellsImg', reelCellsImg);
+};
+
+export default Reels;

@@ -1,16 +1,16 @@
-var webpack = require('webpack');
-var path = require('path');
-var package = require('./package.json');
+const webpack = require('webpack');
+const path = require('path');
+const pkg = require('./package.json');
 
 // variables
-var isProduction = process.argv.indexOf('-p') >= 0 || process.env.NODE_ENV === 'production';
-var sourcePath = path.join(__dirname, './src');
-var outPath = path.join(__dirname, './build');
+const isProduction = process.argv.indexOf('-p') >= 0 || process.env.NODE_ENV === 'production';
+const sourcePath = path.join(__dirname, './src');
+const outPath = path.join(__dirname, './build');
 
 // plugins
-var HtmlWebpackPlugin = require('html-webpack-plugin');
-var MiniCssExtractPlugin = require('mini-css-extract-plugin');
-var { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 module.exports = {
   context: sourcePath,
@@ -98,7 +98,7 @@ module.exports = {
       disable: !isProduction
     }),
     new HtmlWebpackPlugin({
-      template: 'assets/index.html',
+      template: '../index.html',
       minify: {
         minifyJS: true,
         minifyCSS: true,
@@ -108,12 +108,12 @@ module.exports = {
         collapseInlineTagWhitespace: true
       },
       append: {
-        head: `<script src="//cdn.polyfill.io/v3/polyfill.min.js"></script>`
+        head: `<script src="https://cdn.polyfill.io/v3/polyfill.min.js"></script>`
       },
       meta: {
-        title: package.name,
-        description: package.description,
-        keywords: Array.isArray(package.keywords) ? package.keywords.join(',') : undefined
+        title: pkg.name,
+        description: pkg.description,
+        keywords: Array.isArray(pkg.keywords) ? pkg.keywords.join(',') : undefined
       }
     })
   ],
@@ -128,7 +128,7 @@ module.exports = {
     clientLogLevel: 'warning'
   },
   // https://webpack.js.org/configuration/devtool/
-  devtool: isProduction ? 'hidden-source-map' : 'cheap-module-eval-source-map',
+  devtool: isProduction ? 'source-map' : 'cheap-module-source-map',
   node: {
     // workaround for webpack-dev-server issue
     // https://github.com/webpack/webpack-dev-server/issues/60#issuecomment-103411179

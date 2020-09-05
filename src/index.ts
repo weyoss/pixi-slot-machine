@@ -5,29 +5,25 @@
 
 import * as PIXI from 'pixi.js';
 
-import Reels from './Reels';
-import Button from './Button';
-import FPSCounter from './FPSCounter';
+import Button from './components/Button';
+import Reels from './components/Reels';
+import FPSDisplay from './components/FPSDisplay';
 
 import './style.css';
-import btnPlayAsset from './assets/playbtn.png';
-import btnPlayInactiveAsset from './assets/playbtn_inactive.png';
-import reelCellsAsset from './assets/reel_cells.png';
 
 const gameWidth = 800;
 const gameHeight = 600;
 const reelsPosition = { x: 120, y: 60 };
 const buttonPosition = { x: 300, y: 440 };
-const fpsPanelPosition = { x: 220, y: 560 };
+const FPSDisplayPosition = { x: 220, y: 560 };
 
 export default function main() {
   let app: PIXI.Application;
 
   function loadAssets(): void {
     const loader = PIXI.Loader.shared;
-    loader.add('playbtn', btnPlayAsset);
-    loader.add('playbtn_inactive', btnPlayInactiveAsset);
-    loader.add('reel_cells', reelCellsAsset);
+    Button.load(loader);
+    Reels.load(loader);
     loader.onComplete.once(setup);
     loader.load();
   }
@@ -41,13 +37,22 @@ export default function main() {
     reelsContainer.position.set(reelsPosition.x, reelsPosition.y);
     stage.addChild(reelsContainer);
 
-    const btnContainer = Button((cb: Function) => rotate(cb));
+    const button = Button();
+    button.setOnclick((instance) => {
+      if (instance.isActive()) {
+        instance.setActive(false);
+        rotate(() => {
+          instance.setActive(true);
+        });
+      }
+    });
+    const btnContainer = button.getContainer();
     btnContainer.position.set(buttonPosition.x, buttonPosition.y);
     stage.addChild(btnContainer);
 
-    const fpsContainer = FPSCounter(app.ticker);
-    fpsContainer.position.set(fpsPanelPosition.x, fpsPanelPosition.y);
-    stage.addChild(fpsContainer);
+    const fpsDisplayContainer = FPSDisplay(app.ticker);
+    fpsDisplayContainer.position.set(FPSDisplayPosition.x, FPSDisplayPosition.y);
+    stage.addChild(fpsDisplayContainer);
   }
 
   function createRenderer(): void {
