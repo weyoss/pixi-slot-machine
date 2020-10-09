@@ -2,6 +2,13 @@ import * as PIXI from 'pixi.js';
 import Reel from '../Reel';
 import { ConfigInterface } from '../../config/contract';
 
+function shuffle(set: number[]) {
+  for (let i = set.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [set[i], set[j]] = [set[j], set[i]];
+  }
+}
+
 class Reels extends PIXI.Container {
   protected items: Reel[] = [];
 
@@ -13,13 +20,16 @@ class Reels extends PIXI.Container {
 
   protected spinning = false;
 
+  protected shuffleSpinningSpeedFactor: boolean;
+
   protected rolledDiceOutcome: number = -1;
 
   constructor(config: ConfigInterface, ticker: PIXI.Ticker) {
     super();
     this.totalReels = config.totalReels;
     this.useEasyMode = config.useEasyMode;
-    this.spinningSpeedFactor = config.reelSpinningSpeedFactor;
+    this.spinningSpeedFactor = [...config.reelSpinningSpeedFactor];
+    this.shuffleSpinningSpeedFactor = config.reelShuffleSpinningSpeedFactor;
     this.position.set(config.reelsPosition.x, config.reelsPosition.y);
     Reel.totalCells = config.totalReelCells;
     for (let index = 0; index < this.totalReels; index = index + 1) {
@@ -41,6 +51,9 @@ class Reels extends PIXI.Container {
       }
     };
     this.rolledDiceOutcome = this.useEasyMode ? Reel.rollDice() : -1;
+    if (this.shuffleSpinningSpeedFactor) {
+      shuffle(this.spinningSpeedFactor);
+    }
     for (let i = 0; i < this.items.length; i++) {
       this.items[i].spin(this.rolledDiceOutcome, this.spinningSpeedFactor[i], onStop);
     }

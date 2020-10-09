@@ -7,6 +7,7 @@ export interface ConfigInterface {
   totalReels: number;
   reelSpinningCycles: number;
   reelSpinningSpeedFactor: number[];
+  reelShuffleSpinningSpeedFactor: boolean;
   totalReelCells: number;
   reelCellHeight: number;
   reelCellWidth: number;

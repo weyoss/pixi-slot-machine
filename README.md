@@ -29,6 +29,7 @@ interface ConfigInterface {
   totalReels: number;
   reelSpinningCycles: number;
   reelSpinningSpeedFactor: number[];
+  reelShuffleSpinningSpeedFactor: boolean;
   totalReelCells: number;
   reelCellHeight: number;
   reelCellWidth: number;
@@ -71,12 +72,20 @@ The number of spinning cycles the reels should perform during the animation.
 
 ### reelSpinningSpeedFactor
 
-Each reel spins at its own speed. The length of the array is total number of reels. The first item of the array 
-corresponds to the spinning speed of the first reel from the screen's left side. 
+Each reel spins at its own speed. The length of the array is total number of reels.
+ 
+An array value corresponds to the amount of pixels by which a given reel spins at a time.
 
 Example:
 
-`[5, 10, 15, 20, 30]` - First reel will spin by 5px at a time, second reel will spin by 10px at a time and so on.
+Given `[5, 10, 15, 20, 30]` - The first reel will spin by 5px at a time, the second reel will spin by 10px 
+at a time and so on.
+
+### reelShuffleSpinningSpeedFactor
+
+Make reels spin randomly at different speeds each run.
+
+When `true`, the order of the `reelSpinningSpeedFactor` array elements does not play a role.
 
 ### totalReelCells
 

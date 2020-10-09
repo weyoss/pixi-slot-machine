@@ -9,6 +9,7 @@ export const config: ConfigInterface = {
   totalReels: 5,
   reelSpinningCycles: 2,
   reelSpinningSpeedFactor: [5, 10, 15, 20, 30],
+  reelShuffleSpinningSpeedFactor: false,
   totalReelCells: 7,
   reelVisibleCells: 3,
   reelCellHeight: 100,
