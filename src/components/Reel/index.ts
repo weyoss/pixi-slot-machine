@@ -17,11 +17,11 @@ class Reel extends PIXI.TilingSprite {
 
   protected cellHeight: number;
 
-  protected totalCells: number;
-
   protected appTicker: PIXI.Ticker;
 
-  constructor(reelIndex: number, config: ConfigInterface, ticker: PIXI.Ticker, initialTilePosition: number = 0) {
+  static totalCells: number = 0;
+
+  constructor(reelIndex: number, config: ConfigInterface, ticker: PIXI.Ticker) {
     const texture = PIXI.Texture.from('reelCellsImg');
     const {
       reelCellHeight,
@@ -29,8 +29,7 @@ class Reel extends PIXI.TilingSprite {
       reelVerticalPadding,
       reelCellWidth,
       reelHorizontalMargin,
-      reelSpinningCycles,
-      totalReelCells
+      reelSpinningCycles
     } = config;
     const reelHeight = reelCellHeight * reelVisibleCells + reelVerticalPadding;
     super(texture, reelCellWidth, reelHeight);
@@ -39,11 +38,10 @@ class Reel extends PIXI.TilingSprite {
     this.cellHeight = reelCellHeight;
     this.horizontalMargin = reelHorizontalMargin;
     this.spinningCycles = reelSpinningCycles;
-    this.totalCells = totalReelCells;
     this.verticalPadding = reelVerticalPadding;
     this.reelIndex = reelIndex;
     this.spinningCyclesMeter = 0;
-    this.setTilePositionAt(initialTilePosition);
+    this.setTilePositionAt(Reel.getRandomOutcome());
     this.setPosition();
   }
 
@@ -58,12 +56,20 @@ class Reel extends PIXI.TilingSprite {
   }
 
   protected resetSpinningMeter() {
-    this.spinningCyclesMeter = this.spinningCycles * this.cellHeight * this.totalCells;
+    this.spinningCyclesMeter = this.spinningCycles * this.cellHeight * Reel.totalCells;
   }
 
-  protected setSpinningOutcome(outcome: number) {
-    this.spinningOutcome = outcome;
-    this.setTilePositionAt(outcome);
+  static rollDice(): number {
+    const chance = Reel.getNumberBetween(0, 10);
+    if (chance < 5) {
+      return Reel.getRandomOutcome();
+    }
+    return -1;
+  }
+
+  protected setSpinningOutcome(useOutcome: number) {
+    this.spinningOutcome = useOutcome >= 0 ? useOutcome : Reel.getRandomOutcome();
+    this.setTilePositionAt(this.spinningOutcome);
     this.resetSpinningMeter();
   }
 
@@ -71,8 +77,8 @@ class Reel extends PIXI.TilingSprite {
     return this.spinningOutcome;
   }
 
-  spin(outcome: number, spinningSpeedFactor: number, cb: Function) {
-    this.setSpinningOutcome(outcome);
+  spin(useOutcome: number, spinningSpeedFactor: number, cb: Function) {
+    this.setSpinningOutcome(useOutcome);
     const animation = () => {
       if (this.spinningCyclesMeter > 0) {
         this.tilePosition.y += spinningSpeedFactor;
@@ -87,6 +93,14 @@ class Reel extends PIXI.TilingSprite {
       }
     };
     this.appTicker.add(animation);
+  }
+
+  protected static getNumberBetween(min: number, max: number) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  protected static getRandomOutcome() {
+    return Reel.getNumberBetween(0, Reel.totalCells - 1);
   }
 
   static load(loader: PIXI.Loader) {

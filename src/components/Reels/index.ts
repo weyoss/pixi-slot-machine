@@ -7,21 +7,21 @@ class Reels extends PIXI.Container {
 
   protected totalReels: number;
 
-  protected totalReelCells: number;
-
   protected spinningSpeedFactor: number[];
 
   protected useEasyMode: boolean;
 
   protected spinning = false;
 
+  protected rolledDiceOutcome: number = -1;
+
   constructor(config: ConfigInterface, ticker: PIXI.Ticker) {
     super();
     this.totalReels = config.totalReels;
     this.useEasyMode = config.useEasyMode;
     this.spinningSpeedFactor = config.reelSpinningSpeedFactor;
-    this.totalReelCells = config.totalReelCells;
     this.position.set(config.reelsPosition.x, config.reelsPosition.y);
+    Reel.totalCells = config.totalReelCells;
     for (let index = 0; index < this.totalReels; index = index + 1) {
       const reel = new Reel(index, config, ticker);
       this.items.push(reel);
@@ -31,7 +31,6 @@ class Reels extends PIXI.Container {
 
   spin(cb: Function) {
     this.spinning = true;
-    const spinningOutcome = this.getSpinningOutcome();
     let spinningReelsNumber = this.totalReels;
     const onStop = () => {
       spinningReelsNumber -= 1;
@@ -41,8 +40,9 @@ class Reels extends PIXI.Container {
         this.checkResults();
       }
     };
+    this.rolledDiceOutcome = this.useEasyMode ? Reel.rollDice() : -1;
     for (let i = 0; i < this.items.length; i++) {
-      this.items[i].spin(spinningOutcome[i], this.spinningSpeedFactor[i], onStop);
+      this.items[i].spin(this.rolledDiceOutcome, this.spinningSpeedFactor[i], onStop);
     }
   }
 
@@ -50,27 +50,15 @@ class Reels extends PIXI.Container {
     return this.spinning;
   }
 
-  protected getSpinningOutcome(): number[] {
-    const outcome = [];
-    const getNumberBetween = (min: number, max: number): number => Math.floor(Math.random() * (max - min + 1)) + min;
-    let useOutcome = null;
-    if (this.useEasyMode) {
-      const chance = getNumberBetween(0, 10);
-      if (chance < 5) {
-        useOutcome = getNumberBetween(0, this.totalReelCells - 1);
-      }
-    }
-    for (let i = 0; i < this.totalReels; i += 1) {
-      const reelSpinningOutcome = useOutcome || getNumberBetween(0, this.totalReelCells - 1);
-      outcome.push(reelSpinningOutcome);
-    }
-    return outcome;
-  }
-
   protected checkResults(): void {
-    const position = this.items[0].getSpinningOutcome();
-    const win = this.items.find((i) => i.getSpinningOutcome() !== position) === undefined;
-    if (win) alert('You won!');
+    // If we have rolled a dice and got lucky, skip checking spinning outcome
+    let won = this.rolledDiceOutcome >= 0;
+    if (!won) {
+      // Check if all the reels have the same spinning outcome
+      const outcome = this.items[0].getSpinningOutcome();
+      won = this.items.find((i) => i.getSpinningOutcome() !== outcome) === undefined;
+    }
+    if (won) alert('You won!');
   }
 
   static load(loader: PIXI.Loader) {
