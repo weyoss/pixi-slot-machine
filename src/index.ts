@@ -57,9 +57,9 @@ window.onload = () =>
     stage.addChild(fpsDisplay);
 
     button.onClick((instance) => {
-      if (!reels.isRotating()) {
+      if (!reels.areSpinning()) {
         instance.setActive(false);
-        reels.rotate(() => {
+        reels.spin(() => {
           instance.setActive(true);
         });
       }

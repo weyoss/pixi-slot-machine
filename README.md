@@ -15,7 +15,7 @@ $ yarn install
 ## Configuration
 
 The configuration file `index.ts` is located under the [config folder](./src/config) and allows you to change for 
-example the game dimensions (width, height), the number of reels, visible reel cells or enable/disable the easy mode.
+example the game dimensions (width, height), the number of reels, visible reel cells or to enable/disable the easy mode.
 
 Supported configuration parameters are described by the `ConfigInterface` interface.
 
@@ -27,9 +27,9 @@ interface ConfigInterface {
   buttonPosition: { x: number; y: number };
   FPSDisplayPosition: { x: number; y: number };
   totalReels: number;
-  reelRotationCycles: number;
-  reelRotationSpeedFactor: number[];
-  reelTotalCells: number;
+  reelSpinningCycles: number;
+  reelSpinningSpeedFactor: number[];
+  totalReelCells: number;
   reelCellHeight: number;
   reelCellWidth: number;
   reelVisibleCells: number;
@@ -65,20 +65,20 @@ Total number of reels.
 
 If you change this parameter you need also to update [reelRatationSpeedFactor](#reelrotationspeedfactor) parameter.
 
-### reelRotationCycles
+### reelSpinningCycles
 
-Rotation cycles of reels during the animation.
+The number of spinning cycles the reels should perform during the animation.
 
-### reelRotationSpeedFactor
+### reelSpinningSpeedFactor
 
-Each reel rotate at its own speed. The length of the array is total number of reels. The first item of the array 
-corresponds to the speed of the first reel from the screen's left side. 
+Each reel spins at its own speed. The length of the array is total number of reels. The first item of the array 
+corresponds to the spinning speed of the first reel from the screen's left side. 
 
 Example:
 
-`[5, 10, 15, 20, 30]` - First reel will move by 5px at a time, second reel will move by 10px at a time and so on.
+`[5, 10, 15, 20, 30]` - First reel will spin by 5px at a time, second reel will spin by 10px at a time and so on.
 
-### reelTotalCells
+### totalReelCells
 
 Total number of reel cells.
 

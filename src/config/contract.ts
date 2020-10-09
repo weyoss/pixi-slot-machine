@@ -5,9 +5,9 @@ export interface ConfigInterface {
   buttonPosition: { x: number; y: number };
   FPSDisplayPosition: { x: number; y: number };
   totalReels: number;
-  reelRotationCycles: number;
-  reelRotationSpeedFactor: number[];
-  reelTotalCells: number;
+  reelSpinningCycles: number;
+  reelSpinningSpeedFactor: number[];
+  totalReelCells: number;
   reelCellHeight: number;
   reelCellWidth: number;
   reelVisibleCells: number;

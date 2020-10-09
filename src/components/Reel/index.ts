@@ -3,9 +3,11 @@ import reelCellsImg from './assets/reel_cells.png';
 import { ConfigInterface } from '../../config/contract';
 
 class Reel extends PIXI.TilingSprite {
-  protected reelPosition: number;
+  protected spinningOutcome: number;
 
-  protected cyclesLength: number;
+  protected spinningCycles: number;
+
+  protected spinningCyclesMeter: number;
 
   protected reelIndex: number;
 
@@ -13,15 +15,13 @@ class Reel extends PIXI.TilingSprite {
 
   protected verticalPadding: number;
 
-  protected rotationCycles: number;
-
   protected cellHeight: number;
 
   protected totalCells: number;
 
   protected appTicker: PIXI.Ticker;
 
-  constructor(reelIndex: number, config: ConfigInterface, ticker: PIXI.Ticker, initialPosition: number = 0) {
+  constructor(reelIndex: number, config: ConfigInterface, ticker: PIXI.Ticker, initialTilePosition: number = 0) {
     const texture = PIXI.Texture.from('reelCellsImg');
     const {
       reelCellHeight,
@@ -29,21 +29,21 @@ class Reel extends PIXI.TilingSprite {
       reelVerticalPadding,
       reelCellWidth,
       reelHorizontalMargin,
-      reelRotationCycles,
-      reelTotalCells
+      reelSpinningCycles,
+      totalReelCells
     } = config;
     const reelHeight = reelCellHeight * reelVisibleCells + reelVerticalPadding;
     super(texture, reelCellWidth, reelHeight);
     this.appTicker = ticker;
-    this.reelPosition = 0;
+    this.spinningOutcome = 0;
     this.cellHeight = reelCellHeight;
     this.horizontalMargin = reelHorizontalMargin;
-    this.rotationCycles = reelRotationCycles;
-    this.totalCells = reelTotalCells;
+    this.spinningCycles = reelSpinningCycles;
+    this.totalCells = totalReelCells;
     this.verticalPadding = reelVerticalPadding;
     this.reelIndex = reelIndex;
-    this.cyclesLength = 0;
-    this.selectCellNumber(initialPosition);
+    this.spinningCyclesMeter = 0;
+    this.setTilePositionAt(initialTilePosition);
     this.setPosition();
   }
 
@@ -52,27 +52,35 @@ class Reel extends PIXI.TilingSprite {
     this.y = 0;
   }
 
-  protected selectCellNumber(position: number) {
-    this.reelPosition = position;
+  protected setTilePositionAt(cellNumber: number) {
     this.tilePosition.x = 0;
-    this.tilePosition.y = -position * this.cellHeight + Math.ceil(this.verticalPadding / 2);
-    this.cyclesLength = this.rotationCycles * this.cellHeight * this.totalCells;
+    this.tilePosition.y = -cellNumber * this.cellHeight + Math.ceil(this.verticalPadding / 2);
   }
 
-  getPosition() {
-    return this.reelPosition;
+  protected resetSpinningMeter() {
+    this.spinningCyclesMeter = this.spinningCycles * this.cellHeight * this.totalCells;
   }
 
-  rotate(position: number, rotationSpeedFactor: number, cb: Function) {
-    this.selectCellNumber(position);
+  protected setSpinningOutcome(outcome: number) {
+    this.spinningOutcome = outcome;
+    this.setTilePositionAt(outcome);
+    this.resetSpinningMeter();
+  }
+
+  getSpinningOutcome() {
+    return this.spinningOutcome;
+  }
+
+  spin(outcome: number, spinningSpeedFactor: number, cb: Function) {
+    this.setSpinningOutcome(outcome);
     const animation = () => {
-      if (this.cyclesLength > 0) {
-        this.tilePosition.y += rotationSpeedFactor;
-        this.cyclesLength -= rotationSpeedFactor;
-      } else if (this.cyclesLength <= 0) {
-        if (this.cyclesLength < 0) {
-          this.tilePosition.y += this.cyclesLength;
-          this.cyclesLength = 0;
+      if (this.spinningCyclesMeter > 0) {
+        this.tilePosition.y += spinningSpeedFactor;
+        this.spinningCyclesMeter -= spinningSpeedFactor;
+      } else if (this.spinningCyclesMeter <= 0) {
+        if (this.spinningCyclesMeter < 0) {
+          this.tilePosition.y += this.spinningCyclesMeter;
+          this.spinningCyclesMeter = 0;
         }
         this.appTicker.remove(animation);
         cb();
