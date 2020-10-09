@@ -4,11 +4,13 @@ Pixi Slot Machine is a bare minimum slot machine game to get familiar with Pixi.
 
 Game parameters are configurable through a configuration file.
 
-![Main screen](./screenshots/mainscreen.png)
+![Gameplay](./screenshots/gameplay.gif)
 
 ## Installation
 
 ```
+$ git clone https://github.com/weyoss/pixi-slot-machine.git
+$ cd pixi-slot-machine
 $ yarn install
 ```
 
