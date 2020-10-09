@@ -15,7 +15,7 @@ $ yarn install
 ## Configuration
 
 The configuration file `index.ts` is located under the [config folder](./src/config) and allows you to change for 
-example the game dimensions (width, height), the number of reels, visible reels' cells or enable/disable the easy mode.
+example the game dimensions (width, height), the number of reels, visible reel cells or enable/disable the easy mode.
 
 Supported configuration parameters are described by the `ConfigInterface` interface.
 

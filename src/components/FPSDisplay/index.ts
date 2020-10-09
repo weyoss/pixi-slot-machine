@@ -1,20 +1,23 @@
 import * as PIXI from 'pixi.js';
-import { FPSDisplayType } from './contract';
+import { ConfigInterface } from '../../config/contract';
 
-const FPSDisplay: FPSDisplayType = (ticker) => {
-  const container = new PIXI.Container();
-  const FPSDisplayText = new PIXI.Text('', {
+class FPSDisplay extends PIXI.Container {
+  protected textStyle: Partial<PIXI.TextStyle> = {
     fontSize: 20,
     fill: 0xff0000
-  });
-  container.addChild(FPSDisplayText);
+  };
 
-  setInterval(() => {
-    const fps = ticker.FPS.toFixed(2);
-    FPSDisplayText.text = `Timestamp: ${Date.now()}, FPS: ${fps}`;
-  }, 1000);
+  constructor(config: ConfigInterface, ticker: PIXI.Ticker) {
+    super();
+    this.position.set(config.FPSDisplayPosition.x, config.FPSDisplayPosition.y);
+    const content = new PIXI.Text('', this.textStyle);
+    this.addChild(content);
 
-  return container;
-};
+    setInterval(() => {
+      const fps = ticker.FPS.toFixed(2);
+      content.text = `Timestamp: ${Date.now()}, FPS: ${fps}`;
+    }, 1000);
+  }
+}
 
 export default FPSDisplay;

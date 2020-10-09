@@ -1,51 +1,37 @@
 import * as PIXI from 'pixi.js';
-import { ButtonFactoryInterface, ButtonInstanceInterface } from './contract';
 
 import btnActiveImg from './assets/playbtn.png';
 import btnInactiveImg from './assets/playbtn_inactive.png';
+import { ConfigInterface } from '../../config/contract';
 
-const Button: ButtonFactoryInterface = () => {
-  const btnActiveTexture = PIXI.Texture.from('btnActiveImg');
-  const btnInactiveTexture = PIXI.Texture.from('btnInactiveImg');
-  let isActive = true;
-  let onClick: Function = () => {};
+class Button extends PIXI.Container {
+  protected btnActiveTexture: PIXI.Texture;
+  protected btnInactiveTexture: PIXI.Texture;
+  protected btn: PIXI.Sprite;
 
-  const btn = new PIXI.Sprite(btnActiveTexture);
-  btn.buttonMode = true;
-  btn.interactive = true;
+  constructor(config: ConfigInterface) {
+    super();
+    this.position.set(config.buttonPosition.x, config.buttonPosition.y);
+    this.btnActiveTexture = PIXI.Texture.from('btnActiveImg');
+    this.btnInactiveTexture = PIXI.Texture.from('btnInactiveImg');
+    this.btn = new PIXI.Sprite(this.btnActiveTexture);
+    this.btn.buttonMode = true;
+    this.btn.interactive = true;
+    this.addChild(this.btn);
+  }
 
-  const container = new PIXI.Container();
-  container.addChild(btn);
+  setActive(active: boolean) {
+    this.btn.texture = active ? this.btnActiveTexture : this.btnInactiveTexture;
+  }
 
-  const buttonInstance: ButtonInstanceInterface = {
-    getContainer(): PIXI.Container {
-      return container;
-    },
+  onClick(fn: (instance: Button) => void) {
+    this.btn.on('click', () => fn(this));
+  }
 
-    setActive(flag = true) {
-      isActive = flag;
-      btn.texture = isActive ? btnActiveTexture : btnInactiveTexture;
-    },
-
-    isActive() {
-      return isActive;
-    },
-
-    setOnclick(cb) {
-      onClick = cb;
-    }
-  };
-
-  btn.on('click', () => {
-    if (onClick) onClick(buttonInstance);
-  });
-
-  return buttonInstance;
-};
-
-Button.load = (loader) => {
-  loader.add('btnActiveImg', btnActiveImg);
-  loader.add('btnInactiveImg', btnInactiveImg);
-};
+  static load(loader: PIXI.Loader) {
+    loader.add('btnActiveImg', btnActiveImg);
+    loader.add('btnInactiveImg', btnInactiveImg);
+  }
+}
 
 export default Button;

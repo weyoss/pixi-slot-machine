@@ -1,104 +1,81 @@
 import * as PIXI from 'pixi.js';
-import { config } from '../../config';
-import { ReelsFactoryInterface } from './contract';
+import Reel from '../Reel';
+import { ConfigInterface } from '../../config/contract';
 
-import reelCellsImg from './assets/reel_cells.png';
+class Reels extends PIXI.Container {
+  protected items: Reel[] = [];
 
-const {
-  totalReels,
-  reelRotationCycles,
-  reelRotationSpeedFactor,
-  reelTotalCells,
-  reelCellHeight,
-  reelCellWidth,
-  reelVisibleCells,
-  reelVerticalPadding,
-  reelHorizontalMargin,
-  useEasyMode
-} = config;
-const reelWidth = reelCellWidth;
-const reelHeight = reelCellHeight * reelVisibleCells + reelVerticalPadding;
+  protected totalReels: number;
 
-const Reel = (width: number, height: number): PIXI.TilingSprite => {
-  const reelCellsTexture = PIXI.Texture.from('reelCellsImg');
-  return new PIXI.TilingSprite(reelCellsTexture, width, height);
-};
+  protected rotationSpeedFactor: number[];
 
-const getNumberBetween = (min: number, max: number): number => Math.floor(Math.random() * (max - min + 1)) + min;
+  protected useEasyMode: boolean;
 
-const getNewReelPositions = (easyMode = true): number[] => {
-  const positions = [];
-  let preDefinedPosition = null;
-  if (easyMode) {
-    const chance = getNumberBetween(0, 10);
-    if (chance < 5) {
-      preDefinedPosition = getNumberBetween(0, reelTotalCells - 1);
+  protected rotating = false;
+
+  protected reelTotalCells: number;
+
+  constructor(config: ConfigInterface, ticker: PIXI.Ticker) {
+    super();
+    this.totalReels = config.totalReels;
+    this.useEasyMode = config.useEasyMode;
+    this.rotationSpeedFactor = config.reelRotationSpeedFactor;
+    this.reelTotalCells = config.reelTotalCells;
+    this.position.set(config.reelsPosition.x, config.reelsPosition.y);
+    for (let index = 0; index < this.totalReels; index = index + 1) {
+      const reel = new Reel(index, config, ticker);
+      this.items.push(reel);
+      this.addChild(reel);
     }
   }
-  for (let i = 0; i < totalReels; i += 1) {
-    const position = preDefinedPosition || getNumberBetween(0, reelTotalCells - 1);
-    positions.push(position);
-  }
-  return positions;
-};
 
-const checkResults = (positions: number[]): void => {
-  const win = positions.find((i) => i !== positions[0]) === undefined;
-  if (win) alert('You won!');
-};
-
-const Reels: ReelsFactoryInterface = () => {
-  const container: PIXI.Container = new PIXI.Container();
-  const reels: PIXI.TilingSprite[] = [];
-  const reelsCyclesLength: number[] = [];
-  let reelPositions: number[] = Array.from({ length: totalReels }, (_, index) => index);
-
-  for (let i = 0; i < totalReels; i = i + 1) {
-    const reel = Reel(reelWidth, reelHeight);
-    reel.tilePosition.x = 0;
-    reel.tilePosition.y = -reelPositions[i] * reelCellHeight + Math.floor(reelVerticalPadding / 2);
-    reel.x = i * (reelWidth + reelHorizontalMargin);
-    reel.y = 0;
-    reels.push(reel);
-    container.addChild(reel);
+  rotate(cb: Function) {
+    this.rotating = true;
+    const reelPositions = this.getNewReelPositions();
+    let rotatingReels = this.totalReels;
+    const onStop = () => {
+      rotatingReels -= 1;
+      if (!rotatingReels) {
+        cb();
+        this.rotating = false;
+        this.checkResults();
+      }
+    };
+    for (let i = 0; i < this.items.length; i++) {
+      this.items[i].rotate(reelPositions[i], this.rotationSpeedFactor[i], onStop);
+    }
   }
 
-  function rotateReels(cb: Function): void {
-    for (let i = 0; i < totalReels; i++) {
-      if (reelsCyclesLength[i] > 0) {
-        reels[i].tilePosition.y += reelRotationSpeedFactor[i];
-        reelsCyclesLength[i] -= reelRotationSpeedFactor[i];
-      } else if (reelsCyclesLength[i] < 0) {
-        reels[i].tilePosition.y += reelsCyclesLength[i];
-        reelsCyclesLength[i] = 0;
+  isRotating() {
+    return this.rotating;
+  }
+
+  protected getNewReelPositions(): number[] {
+    const positions = [];
+    const getNumberBetween = (min: number, max: number): number => Math.floor(Math.random() * (max - min + 1)) + min;
+    let preDefinedPosition = null;
+    if (this.useEasyMode) {
+      const chance = getNumberBetween(0, 10);
+      if (chance < 5) {
+        preDefinedPosition = getNumberBetween(0, this.reelTotalCells - 1);
       }
     }
-    const done = reelsCyclesLength.find((i) => i > 0);
-    if (done !== undefined) requestAnimationFrame(() => rotateReels(cb));
-    else {
-      cb();
-      checkResults(reelPositions);
+    for (let i = 0; i < this.totalReels; i += 1) {
+      const position = preDefinedPosition || getNumberBetween(0, this.reelTotalCells - 1);
+      positions.push(position);
     }
+    return positions;
   }
 
-  return {
-    getContainer() {
-      return container;
-    },
+  protected checkResults(): void {
+    const position = this.items[0].getPosition();
+    const win = this.items.find((i) => i.getPosition() !== position) === undefined;
+    if (win) alert('You won!');
+  }
 
-    rotate(cb) {
-      reelPositions = getNewReelPositions(useEasyMode);
-      for (let i = 0; i < totalReels; i += 1) {
-        reels[i].tilePosition.y = -reelPositions[i] * reelCellHeight + Math.ceil(reelVerticalPadding / 2);
-        reelsCyclesLength[i] = reelRotationCycles * reelCellHeight * reelTotalCells;
-      }
-      rotateReels(cb);
-    }
-  };
-};
-
-Reels.load = (loader) => {
-  loader.add('reelCellsImg', reelCellsImg);
-};
+  static load(loader: PIXI.Loader) {
+    Reel.load(loader);
+  }
+}
 
 export default Reels;
