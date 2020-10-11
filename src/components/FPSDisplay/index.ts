@@ -4,7 +4,8 @@ import { ConfigInterface } from '../../config/contract';
 class FPSDisplay extends PIXI.Container {
   protected textStyle: Partial<PIXI.TextStyle> = {
     fontSize: 20,
-    fill: 0xff0000
+    fill: '#F4802C',
+    align: 'right'
   };
 
   constructor(config: ConfigInterface, ticker: PIXI.Ticker) {
@@ -15,7 +16,7 @@ class FPSDisplay extends PIXI.Container {
 
     setInterval(() => {
       const fps = ticker.FPS.toFixed(2);
-      content.text = `Timestamp: ${Date.now()}, FPS: ${fps}`;
+      content.text = `Timestamp: ${Date.now()} / FPS: ${fps}`;
     }, 1000);
   }
 }

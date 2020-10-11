@@ -38,7 +38,6 @@ interface ConfigInterface {
   reelVisibleCells: number;
   reelVerticalPadding: number;
   reelHorizontalMargin: number;
-  useEasyMode: boolean;
 }
 ```
 
@@ -112,10 +111,6 @@ Reel top and bottom padding in pixels.
 ### reelHorizontalMargin
 
 Space between reels in pixels.
-
-### useEasyMode
-
-Use the easy mode to increase the probability to win.
 
 ## Running
 

@@ -16,7 +16,7 @@ class Reels extends PIXI.Container {
 
   protected spinningSpeedFactor: number[];
 
-  protected useEasyMode: boolean;
+  protected useEasyMode: boolean = false;
 
   protected spinning = false;
 
@@ -27,7 +27,6 @@ class Reels extends PIXI.Container {
   constructor(config: ConfigInterface, ticker: PIXI.Ticker) {
     super();
     this.totalReels = config.totalReels;
-    this.useEasyMode = config.useEasyMode;
     this.spinningSpeedFactor = [...config.reelSpinningSpeedFactor];
     this.shuffleSpinningSpeedFactor = config.reelShuffleSpinningSpeedFactor;
     this.position.set(config.reelsPosition.x, config.reelsPosition.y);
@@ -63,6 +62,10 @@ class Reels extends PIXI.Container {
     return this.spinning;
   }
 
+  setEasyMode(flag: boolean) {
+    this.useEasyMode = flag;
+  }
+
   protected checkResults(): void {
     // If we have rolled a dice and got lucky, skip checking spinning outcome
     let won = this.rolledDiceOutcome >= 0;
@@ -72,10 +75,6 @@ class Reels extends PIXI.Container {
       won = this.items.find((i) => i.getSpinningOutcome() !== outcome) === undefined;
     }
     if (won) alert('You won!');
-  }
-
-  static load(loader: PIXI.Loader) {
-    Reel.load(loader);
   }
 }
 

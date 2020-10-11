@@ -102,10 +102,8 @@ class Reel extends PIXI.TilingSprite {
   protected static getRandomOutcome() {
     return Reel.getNumberBetween(0, Reel.totalCells - 1);
   }
-
-  static load(loader: PIXI.Loader) {
-    loader.add('reelCellsImg', reelCellsImg);
-  }
 }
+
+PIXI.Loader.shared.add('reelCellsImg', reelCellsImg);
 
 export default Reel;

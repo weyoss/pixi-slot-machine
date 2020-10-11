@@ -5,7 +5,8 @@
 
 import * as PIXI from 'pixi.js';
 import { config } from './config';
-import Button from './components/Button';
+import PlayButton from './components/PlayButton';
+import SelectPlayMode from './components/SelectPlayMode';
 import Reels from './components/Reels';
 import FPSDisplay from './components/FPSDisplay';
 
@@ -32,8 +33,6 @@ function createApplication(): PIXI.Application {
 
 function loadAssets(onComplete: () => void): void {
   const loader = PIXI.Loader.shared;
-  Button.load(loader);
-  Reels.load(loader);
   loader.onComplete.once(onComplete);
   loader.load();
 }
@@ -47,8 +46,11 @@ window.onload = () =>
     const app = createApplication();
     const stage = app.stage;
 
-    const button = new Button(config);
+    const button = new PlayButton(config);
     stage.addChild(button);
+
+    const select = new SelectPlayMode(config);
+    stage.addChild(select);
 
     const reels = new Reels(config, app.ticker);
     stage.addChild(reels);
@@ -56,13 +58,17 @@ window.onload = () =>
     const fpsDisplay = new FPSDisplay(config, app.ticker);
     stage.addChild(fpsDisplay);
 
-    button.onClick((instance) => {
+    button.on('click', function (this: PlayButton) {
       if (!reels.areSpinning()) {
-        instance.setActive(false);
+        this.setDisabled();
         reels.spin(() => {
-          instance.setActive(true);
+          this.setInactive();
         });
       }
+    });
+
+    select.on('click', function (this: SelectPlayMode) {
+      reels.setEasyMode(this.isOn());
     });
 
     render(app);
