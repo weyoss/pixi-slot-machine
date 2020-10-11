@@ -4,7 +4,7 @@ Pixi Slot Machine is a bare minimum slot machine game to get familiar with Pixi.
 
 Game parameters are configurable through a configuration file.
 
-![Gameplay](./screenshots/gameplay.gif)
+![Gameplay](./screenshots/gameplay.gif?v=124)
 
 ## Installation
 

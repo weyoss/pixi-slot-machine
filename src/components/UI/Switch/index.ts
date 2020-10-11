@@ -12,10 +12,11 @@ class Switch extends Button {
   protected label: PIXI.Text;
 
   /**
-   * Parent constructor class does not access updated/overwritten property by a child class
+   * A parent class constructor does not access/see child class properties
    * See https://github.com/microsoft/TypeScript/issues/1617
    *
-   * Workaround: Access label and update it (this.label.style = ...) after calling super() from your child class.
+   * Workaround: In your child constructor, after calling super() access the label property and update it
+   * (this.label.style = ...)
    */
   protected labelStyle: Partial<PIXI.TextStyle> = {
     fontSize: 16,
