@@ -2,12 +2,6 @@ import * as PIXI from 'pixi.js';
 import Reel from '../Reel';
 import { ConfigInterface } from '../../config/contract';
 
-function shuffle(set: number[]) {
-  for (let i = set.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [set[i], set[j]] = [set[j], set[i]];
-  }
-}
 
 class Reels extends PIXI.Container {
   protected items: Reel[] = [];
@@ -30,9 +24,8 @@ class Reels extends PIXI.Container {
     this.spinningSpeedFactor = [...config.reelSpinningSpeedFactor];
     this.shuffleSpinningSpeedFactor = config.reelShuffleSpinningSpeedFactor;
     this.position.set(config.reelsPosition.x, config.reelsPosition.y);
-    Reel.totalCells = config.totalReelCells;
     for (let index = 0; index < this.totalReels; index = index + 1) {
-      const reel = new Reel(index, config, ticker);
+      const reel = new Reel(index, config, ticker, config.reelSymbolsTape[index], config.reelStartingPositions[index]);
       this.items.push(reel);
       this.addChild(reel);
     }
@@ -46,15 +39,10 @@ class Reels extends PIXI.Container {
       if (!spinningReelsNumber) {
         cb();
         this.spinning = false;
-        this.checkResults();
       }
     };
-    this.rolledDiceOutcome = this.useEasyMode ? Reel.rollDice() : -1;
-    if (this.shuffleSpinningSpeedFactor) {
-      shuffle(this.spinningSpeedFactor);
-    }
     for (let i = 0; i < this.items.length; i++) {
-      this.items[i].spin(this.rolledDiceOutcome, this.spinningSpeedFactor[i], onStop);
+      this.items[i].spin(this.spinningSpeedFactor[i], onStop);
     }
   }
 
@@ -66,16 +54,6 @@ class Reels extends PIXI.Container {
     this.useEasyMode = flag;
   }
 
-  protected checkResults(): void {
-    // If we have rolled a dice and got lucky, skip checking spinning outcome
-    let won = this.rolledDiceOutcome >= 0;
-    if (!won) {
-      // Check if all the reels have the same spinning outcome
-      const outcome = this.items[0].getSpinningOutcome();
-      won = this.items.find((i) => i.getSpinningOutcome() !== outcome) === undefined;
-    }
-    if (won) alert('You won!');
-  }
 }
 
 export default Reels;

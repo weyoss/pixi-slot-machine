@@ -6,6 +6,7 @@ export interface ConfigInterface {
   selectEasyModePosition: { x: number; y: number };
   FPSDisplayPosition: { x: number; y: number };
   totalReels: number;
+  reelSymbolsTape: string[];
   reelSpinningCycles: number;
   reelSpinningSpeedFactor: number[];
   reelShuffleSpinningSpeedFactor: boolean;
@@ -15,4 +16,5 @@ export interface ConfigInterface {
   reelVisibleCells: number;
   reelVerticalPadding: number;
   reelHorizontalMargin: number;
+  reelStartingPositions: number[];
 }

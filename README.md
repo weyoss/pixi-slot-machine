@@ -4,14 +4,14 @@ Pixi Slot Machine is a bare minimum slot machine game to get familiar with Pixi.
 
 Game parameters are configurable through a configuration file.
 
-![Gameplay](./screenshots/gameplay.gif?v=124)
+This is adoptation so we can integrate it with Phoenix live view.
 
 ## Installation
 
 ```
-$ git clone https://github.com/weyoss/pixi-slot-machine.git
+$ git clone https://github.com/karlosmid/pixi-slot-machine.git
 $ cd pixi-slot-machine
-$ yarn install
+$ npm install
 ```
 
 ## Configuration
@@ -29,6 +29,7 @@ interface ConfigInterface {
   buttonPosition: { x: number; y: number };
   FPSDisplayPosition: { x: number; y: number };
   totalReels: number;
+  reelSymbolsTape: string[];
   reelSpinningCycles: number;
   reelSpinningSpeedFactor: number[];
   reelShuffleSpinningSpeedFactor: boolean;
@@ -66,6 +67,14 @@ Position of the FPS display.
 Total number of reels. 
 
 If you change this parameter you need also to update [reelRatationSpeedFactor](#reelrotationspeedfactor) parameter.
+
+### reelSymbolsTape
+
+List of strings that represent image of reel symbol tape. Number of elements must corespond to totalReels.
+
+Example:
+
+`reelSymbolsTape: ['../images/reel_cells.png', '../images/reel_cells.png', '../images/reel_cells.png']`
 
 ### reelSpinningCycles
 
